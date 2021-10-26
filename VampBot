@@ -1,0 +1,55 @@
+
+#!/bin/bash
+
+
+_get_repolink () {
+    local regex
+    regex='(https?)://github.com/.+/.+'
+    if [[ $DARK_REPO == "VAMPBOT" ]]
+    then
+        echo "aHR0cHM6Ly9naXRodWIuY29tL0QxNUg0TlQwUC9WQU1QVVNFUkJPVC9hcmNoaXZlL21hc3Rlci56aXA=" | base64 -d
+    elif [[ $DARK_REPO == "VAMPBOT" ]]
+    then
+        echo "aHR0cHM6Ly9naXRodWIuY29tL0QxNUg0TlQwUC9WQU1QVVNFUkJPVC9hcmNoaXZlL21hc3Rlci56aXA=" | base64 -d
+    elif [[ $DARK_REPO =~ $regex ]]
+    then
+        if [[ $DARK_REPO_BRANCH ]]
+        then
+            echo "${DARK_REPO}/archive/${DARK_REPO_BRANCH}.zip"
+        else
+            echo "${DARK_REPO}/archive/master.zip"
+        fi
+    else
+        echo "aHR0cHM6Ly9naXRodWIuY29tL0QxNUg0TlQwUC9WQU1QVVNFUkJPVC9hcmNoaXZlL21hc3Rlci56aXA=" | base64 -d
+    fi
+}
+
+
+_set_bot () {
+    local zippath
+    zippath="VampBot.zip"
+    echo "  Downloading source code ..."
+    wget -q $(_get_repolink) -O "$zippath"
+    echo "  Unpacking Data ..."
+    DARKPATH=$(zipinfo -1 "$zippath" | grep -v "/.");
+    unzip -qq "$zippath"
+    echo "Done"
+    echo "  Cleaning ..."
+    rm -rf "$zippath"
+    sleep 5
+    cd $DARKPATH
+    echo "    Starting personal bot    "
+    echo "
+                          ╦══╦═╦══╗
+                          ║╔╗║║╠╗╔╝
+                          ║╔╗║║║║║
+                          ╚╩══╩═╝╚╝
+    "
+
+    python3 ./setup/updater.py ./requirements.txt requirements.txt
+    python3 -m userbot
+}
+
+_set_bot
+
+
